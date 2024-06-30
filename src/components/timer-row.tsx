@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react";
 import TimerInput from "./timer-input";
 import TimerView from "./timer-view";
-import { Separator } from "./ui/separator";
 
 const TimerRow = () => {
   const [values, setValues] = useState({
@@ -50,37 +49,41 @@ const TimerRow = () => {
   }, [values]);
 
   return (
-    <div className="flex items-center gap-8 border-b border-slate-300 p-4">
+    <div className="flex flex-col gap-4 border-b border-slate-300 p-4 sm:flex-row sm:items-center">
       <TimerView label="Seg" value="2 Jul" />
-      <Separator orientation="vertical" className="h-8" />
-      <TimerInput
-        label="Hora de entrada"
-        onChange={(value) => setValues({ ...values, entrada: value })}
-      />
-      <TimerInput
-        label="Intervalo"
-        onChange={(value) => setValues({ ...values, intervalo: value })}
-      />
-      <TimerInput
-        label="Retorno do intervalo"
-        onChange={(value) => setValues({ ...values, retorno: value })}
-      />
-      <TimerInput
-        label="Hora de saída"
-        onChange={(value) => setValues({ ...values, saida: value })}
-      />
-      <Separator orientation="vertical" className="h-8" />
-      <TimerView
-        label="Horas trabalhadas"
-        prefix="H"
-        value={calculateHoursWorkedAndBalance.totalWorked}
-      />
-      <TimerView
-        label="Saldo do dia"
-        prefix="H"
-        value={calculateHoursWorkedAndBalance.balance}
-        variant={calculateHoursWorkedAndBalance.balanceType}
-      />
+
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <TimerInput
+          label="Hora de entrada"
+          onChange={(value) => setValues({ ...values, entrada: value })}
+        />
+        <TimerInput
+          label="Intervalo"
+          onChange={(value) => setValues({ ...values, intervalo: value })}
+        />
+        <TimerInput
+          label="Retorno do intervalo"
+          onChange={(value) => setValues({ ...values, retorno: value })}
+        />
+        <TimerInput
+          label="Hora de saída"
+          onChange={(value) => setValues({ ...values, saida: value })}
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <TimerView
+          label="Horas trabalhadas"
+          prefix="H"
+          value={calculateHoursWorkedAndBalance.totalWorked}
+        />
+        <TimerView
+          label="Saldo do dia"
+          prefix="H"
+          value={calculateHoursWorkedAndBalance.balance}
+          variant={calculateHoursWorkedAndBalance.balanceType}
+        />
+      </div>
     </div>
   );
 };

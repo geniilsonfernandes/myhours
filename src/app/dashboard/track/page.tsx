@@ -36,8 +36,8 @@ const TimeRecordPage = () => {
         title="Registro de tempo"
         description="Gerencie suas horas de trabalho"
       />
-      <div className="mb-8 flex gap-4">
-        <div className="inline-flex cursor-pointer items-center gap-4 rounded-md border border-slate-300 text-sm text-slate-500">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row">
+        <div className="inline-flex cursor-pointer items-center justify-between gap-4 rounded-md border border-slate-300 text-sm text-slate-500">
           <button className="flex h-10 w-10 items-center justify-center rounded-md hover:bg-slate-100">
             <ChevronLeft strokeWidth={1} />
           </button>
