@@ -35,6 +35,7 @@ model employee {
   updatedAt DateTime @updatedAt
 
   daily_work_hours Int @default(530)
+  daily_work_minutes Int @default(60)
 
   workLog workLog[]
 
@@ -47,6 +48,7 @@ model workLog {
   break_start Decimal
   break_end   Decimal
   total_working_hours Decimal
+
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

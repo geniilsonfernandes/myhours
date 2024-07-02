@@ -1,23 +1,24 @@
 "use server";
 
 import { prisma } from "@/lib/services/prisma";
+import { Prisma } from "@prisma/client";
 
-export async function createEmployee(data: {
-  username: string;
-  password: string;
-  email: string;
-}) {
+type CreateEmployeeInput = Prisma.employeeCreateInput;
+
+export async function createEmployee(data: CreateEmployeeInput) {
   try {
     await prisma.employee.create({
       data: {
-        name: data.username,
+        email: data.email,
+        name: data.name,
         password: data.password,
-        email: data.password,
-        role: "USER",
-        phone: "123456789",
+        role: data.role,
+        phone: data.phone,
+        daily_work_hours: data.daily_work_hours,
       },
     });
   } catch (error) {
     console.log(error);
   }
 }
+

@@ -3,7 +3,6 @@
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { Employee } from "@/types/models";
-import convertMinutesToHours from "@/utils/convertMinutesToHours";
 import { Timer } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -39,10 +38,12 @@ const List = ({ data }: ListProps) => {
         {
           header: "Carga horária",
           accessorKey: "daily_work_hours",
-          cell: ({ getValue }) => {
+          cell: ({ row }) => {
+            const minutes = row.original.daily_work_minutes;
+            const hours = row.original.daily_work_hours;
             return (
               <div className="rounded-md border border-slate-200 bg-slate-100 p-2 text-sm">
-                {convertMinutesToHours(getValue() as number)}
+                {hours}h:{minutes}m
               </div>
             );
           },

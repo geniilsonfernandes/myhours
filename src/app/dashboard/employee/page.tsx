@@ -9,6 +9,16 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { getEmployees } from "@/actions/employee/queries";
+
+import CreateEmployee from "@/components/create-employee";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Metadata } from "next";
 import Link from "next/link";
 import List from "./List";
@@ -37,7 +47,18 @@ export default async function EmployeePage() {
         title="Funcionários"
         description="Crie e gerencie os seus funcionaários"
       >
-        <Button className="mt-4">Criar novo</Button>
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button className="mt-4">Criar novo</Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>CREATE</SheetTitle>
+              <SheetDescription></SheetDescription>
+            </SheetHeader>
+            <CreateEmployee />
+          </SheetContent>
+        </Sheet>
       </Header>
       <List data={data} />
     </>
