@@ -2,11 +2,16 @@
 
 import { DataTable } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
+import { Employee } from "@/types/models";
 import convertMinutesToHours from "@/utils/convertMinutesToHours";
 import { Timer } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const List = () => {
+type ListProps = {
+  data?: Employee[];
+};
+
+const List = ({ data }: ListProps) => {
   const router = useRouter();
   return (
     <DataTable
@@ -33,7 +38,7 @@ const List = () => {
         },
         {
           header: "Carga horária",
-          accessorKey: "workload",
+          accessorKey: "daily_work_hours",
           cell: ({ getValue }) => {
             return (
               <div className="rounded-md border border-slate-200 bg-slate-100 p-2 text-sm">
@@ -49,7 +54,7 @@ const List = () => {
               <div className="flex gap-2">
                 <Button
                   onClick={() => {
-                    router.push(`/dashboard/workLog/${row.original.name}`);
+                    router.push(`/dashboard/workLog/${row.original.id}`);
                   }}
                   variant={"outline"}
                 >
@@ -69,32 +74,7 @@ const List = () => {
           },
         },
       ]}
-      data={[
-        {
-          name: "Jussara",
-          email: "Jussara.com",
-          created_at: "2022-01-01",
-          updated_at: "2022-01-01",
-          role: "Recepcionista",
-          workload: 2640,
-        },
-        {
-          name: "Cristina",
-          email: "Cristina.com",
-          created_at: "2022-01-01",
-          updated_at: "2022-01-01",
-          role: "ASB",
-          workload: 2640,
-        },
-        {
-          name: "Lucimara",
-          email: "Lucimara.com",
-          created_at: "2022-01-01",
-          updated_at: "2022-01-01",
-          role: "ASB",
-          workload: 2640,
-        },
-      ]}
+      data={data || []}
     />
   );
 };

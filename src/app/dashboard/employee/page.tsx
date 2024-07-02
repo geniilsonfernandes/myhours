@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 
+import { getEmployees } from "@/actions/employee/queries";
 import { Metadata } from "next";
 import Link from "next/link";
 import List from "./List";
@@ -17,9 +18,10 @@ export const metadata: Metadata = {
   description: "Gerencie os seus funcionários",
 };
 
-export default function EmployeePage() {
+export default async function EmployeePage() {
+  const data = await getEmployees();
   return (
-    <div className="container">
+    <>
       <Breadcrumb className="mt-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -37,7 +39,7 @@ export default function EmployeePage() {
       >
         <Button className="mt-4">Criar novo</Button>
       </Header>
-      <List />
-    </div>
+      <List data={data} />
+    </>
   );
 }

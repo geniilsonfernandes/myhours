@@ -40,7 +40,7 @@ const InfoView = ({ label, value }: InfoViewProps) => {
 
 const WorkLogPage = async ({ params }: WorkLogProps) => {
   return (
-    <div className="container pb-8">
+    <>
       <Breadcrumb className="mt-8">
         <BreadcrumbList>
           <BreadcrumbItem>
@@ -133,7 +133,7 @@ const WorkLogPage = async ({ params }: WorkLogProps) => {
           balance: "10:00",
         }))}
       />
-    </div>
+    </>
   );
 };
 

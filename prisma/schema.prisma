@@ -4,20 +4,54 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+
 generator client {
   provider = "prisma-client-js"
 }
 
+
 datasource db {
-  provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+        
+
+enum Role {
+  USER
+  ADMIN
 }
 
 
-model Employee {
-  id        String @id @default(uuid())
+
+model employee {
+  id        String @id @default(uuid()) 
   name      String
   email     String
+  phone     String
+  role      Role
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  daily_work_hours Int @default(530)
+
+  workLog workLog[]
+
+}
+
+model workLog {
+  id          String @id @default(uuid()) 
+  start_time  Decimal
+  end_time    Decimal
+  break_start Decimal
+  break_end   Decimal
+  total_working_hours Decimal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employee_id String
+
+  employee    employee @relation(fields: [employee_id], references: [id])
 }

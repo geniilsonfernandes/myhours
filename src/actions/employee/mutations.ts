@@ -5,14 +5,16 @@ import { prisma } from "@/lib/services/prisma";
 export async function createEmployee(data: {
   username: string;
   password: string;
+  email: string;
 }) {
   try {
-    console.log(data);
-
     await prisma.employee.create({
       data: {
         name: data.username,
+        password: data.password,
         email: data.password,
+        role: "USER",
+        phone: "123456789",
       },
     });
   } catch (error) {
