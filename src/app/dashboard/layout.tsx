@@ -3,7 +3,7 @@ import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { Bell, Search } from "lucide-react";
 import { ReactNode } from "react";
 
-export default function Layout({ children }: { children: ReactNode }) {
+export default async function Layout({ children }: { children: ReactNode }) {
   return (
     <>
       <header className="mb-4 border-b border-slate-200">

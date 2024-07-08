@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import { getEmployees } from "@/actions/employee/queries";
 
-import CreateEmployee from "@/components/create-employee";
+import CreateEmployee from "@/components/forms/create-employee";
 import {
   Sheet,
   SheetContent,

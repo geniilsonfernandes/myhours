@@ -12,9 +12,23 @@ type ListProps = {
 
 const List = ({ data }: ListProps) => {
   const router = useRouter();
+  console.log(data);
+
   return (
     <DataTable
       columns={[
+        {
+          accessorKey: "id",
+          header: "ID",
+          cell: ({ getValue }) => {
+            const id = getValue() as string;
+            return (
+              <div className="rounded-md border border-slate-200 bg-slate-100 p-2 text-sm">
+                {id}
+              </div>
+            );
+          },
+        },
         {
           accessorKey: "name",
           header: "Funcionário",

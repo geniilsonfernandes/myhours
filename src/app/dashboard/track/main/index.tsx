@@ -2,40 +2,74 @@
 
 import TimerRow from "@/components/timer-row";
 import UserPicker from "@/components/user-picker";
-import WeekPick from "@/components/week-pick";
-import { addDays, format, startOfWeek } from "date-fns";
+import WeekPick, { WeekPickRange } from "@/components/week-pick";
+import useWeekDays from "@/hooks/useWeekDays";
+import { IWorklog } from "@/types/models";
+
+import axios from "axios";
+import { endOfWeek, format, startOfWeek } from "date-fns";
+import dayjs from "dayjs";
 import { useState } from "react";
+import useSWR from "swr";
 
-function generateWeek(start_week: Date): Date[] {
-  const weekArray: Date[] = [];
-
-  for (let i = 0; i < 7; i++) {
-    const currentDate = addDays(startOfWeek(start_week), i);
-    weekArray.push(currentDate);
-  }
-  weekArray.pop();
-  weekArray.shift();
-  return weekArray;
-}
+const fetcher = (...args: Parameters<typeof axios.get>) =>
+  axios.get(...args).then((res) => res.data);
 
 const Main = () => {
-  const [week, setWeek] = useState<Date[]>(generateWeek(new Date()));
+  const [selectedWeek, setSelectedWeek] = useState<WeekPickRange>({
+    from: startOfWeek(new Date()),
+    to: endOfWeek(new Date()),
+  });
+  const weekDays = useWeekDays(selectedWeek);
+
+  const { data, isLoading } = useSWR(
+    `/api/worklog?from=${format(selectedWeek.from, "yyyy-MM-dd")}&to=${format(
+      selectedWeek.to,
+      "yyyy-MM-dd",
+    )}`,
+    fetcher,
+    {
+      onSuccess(data, key, config) {
+        console.log(data);
+      },
+    },
+  );
+
+  const findLog = (day: string) => {
+    const findLog = data?.logs?.find(
+      (log: IWorklog) => dayjs(log.date).format("YYYY-MM-DD") === day,
+    );
+
+    return {
+      ...findLog,
+    };
+  };
+
+  console.log(weekDays);
 
   return (
     <>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row">
         <WeekPick
-          onWeekChange={(from) => {
-            setWeek(generateWeek(from));
+          onWeekChange={(from, to) => {
+            setSelectedWeek({ from, to });
           }}
         />
         <UserPicker label="Jussara viana" />
       </div>
-
-      <div>
-        {week.map((item) => (
-          <TimerRow key={format(item, "yyyy-MM-dd")} date={item} />
-        ))}
+      <div className="grid grid-cols-1 gap-6">
+        {!isLoading &&
+          weekDays.map(({ day, weekDay }) => {
+            if (weekDay === "sabado" || weekDay === "domingo") return null;
+            return (
+              <TimerRow
+                key={day}
+                day={day}
+                log={findLog(day)}
+                disabled={weekDay === "Saturday" || weekDay === "Sunday"}
+              />
+            );
+          })}
       </div>
     </>
   );

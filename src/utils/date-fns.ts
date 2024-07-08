@@ -1,13 +1,13 @@
-import { format as formatDateFns } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { formatInTimeZone } from "date-fns-tz";
 
 // // Configurando a semana para começar na segunda-feira
 // setDefaultOptions({ weekStartsOn: 1 });
 
-export const formatMonth = (date: Date) => {
-  return formatDateFns(date, "dd MMM", { locale: ptBR });
-};
+const timeZone = "UTC"; // ou use seu fuso horário local, como 'America/Sao_Paulo'
 
-export const formatDate = (date: Date, format: string): string => {
-  return formatDateFns(date, format, { locale: ptBR });
+export const formatDate = (date: Date | string) =>
+  formatInTimeZone(date, timeZone, "yyyy-MM-dd");
+
+export const formatMonth = (date: Date) => {
+  return formatInTimeZone(date, timeZone, "dd MMM");
 };

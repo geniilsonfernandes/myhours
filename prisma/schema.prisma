@@ -1,59 +1,43 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-
 generator client {
   provider = "prisma-client-js"
 }
-
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
-        
+
+model employee {
+  id                 String    @id @default(uuid())
+  name               String
+  email              String
+  phone              String
+  role               Role
+  password           String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime
+  daily_work_hours   Int       @default(530)
+  daily_work_minutes Int       @default(60)
+  worklog            worklog[]
+}
+
+model worklog {
+  id                  String    @id @default(uuid())
+  date                DateTime  @db.Date
+  start_time          Int
+  end_time            Int
+  break_start         Int
+  break_end           Int
+  total_working_hours Int
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  employee_id         String
+  employee            employee  @relation(fields: [employee_id], references: [id])
+}
 
 enum Role {
   USER
   ADMIN
-}
-
-
-
-model employee {
-  id        String @id @default(uuid()) 
-  name      String
-  email     String
-  phone     String
-  role      Role
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  daily_work_hours Int @default(530)
-  daily_work_minutes Int @default(60)
-
-  workLog workLog[]
-
-}
-
-model workLog {
-  id          String @id @default(uuid()) 
-  start_time  Decimal
-  end_time    Decimal
-  break_start Decimal
-  break_end   Decimal
-  total_working_hours Decimal
-
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  employee_id String
-
-  employee    employee @relation(fields: [employee_id], references: [id])
 }

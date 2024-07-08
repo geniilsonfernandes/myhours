@@ -3,8 +3,9 @@
 import { Calendar } from "@/components/ui/calendar";
 import { formatMonth } from "@/utils/date-fns";
 import { addDays, endOfWeek, isSameWeek, startOfWeek } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home } from "lucide-react";
 import { useState } from "react";
+import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export type WeekPickRange = {
@@ -14,12 +15,14 @@ export type WeekPickRange = {
 
 type WeekPickProps = {
   onWeekChange?: (from: Date, to: Date) => void;
+  weekPickRange?: WeekPickRange;
+  selectedWeek?: WeekPickRange;
 };
 
 const WeekPick = ({ onWeekChange }: WeekPickProps) => {
   const [selectedWeek, setSelectedWeek] = useState<WeekPickRange>({
     from: startOfWeek(new Date()),
-    to: addDays(new Date(), 4),
+    to: endOfWeek(new Date()),
   });
 
   const handleWeekChange = (type: "previous" | "next", e: React.MouseEvent) => {
@@ -29,12 +32,27 @@ const WeekPick = ({ onWeekChange }: WeekPickProps) => {
       to: addDays(selectedWeek.to, type === "previous" ? -7 : 7),
     };
 
-    setSelectedWeek(draft);
     onWeekChange?.(draft.from, draft.to);
+    setSelectedWeek(draft);
+  };
+
+  const handleSetThisWeek = () => {
+    onWeekChange?.(startOfWeek(new Date()), endOfWeek(new Date()));
+    setSelectedWeek({
+      from: startOfWeek(new Date()),
+      to: endOfWeek(new Date()),
+    });
   };
 
   return (
-    <div>
+    <div className="flex items-center gap-4">
+      <Button
+        onClick={handleSetThisWeek}
+        className="border border-slate-300 p-4"
+        variant="outline"
+      >
+        <Home strokeWidth={1} size={16} />
+      </Button>
       <Popover>
         <PopoverTrigger>
           <div className="inline-flex w-[250px] cursor-pointer items-center justify-between gap-4 rounded-md border border-slate-300 text-sm text-slate-500">
@@ -68,10 +86,10 @@ const WeekPick = ({ onWeekChange }: WeekPickProps) => {
               onWeekChange?.(startOfWeek(day), endOfWeek(day));
               setSelectedWeek({
                 from: startOfWeek(day),
-                to: addDays(startOfWeek(day), 6),
+                to: endOfWeek(day),
               });
             }}
-            onWeekNumberClick={(weekNumber, dates) => {
+            onWeekNumberClick={(_, dates) => {
               if (
                 selectedWeek?.from &&
                 isSameWeek(dates[0], selectedWeek.from)

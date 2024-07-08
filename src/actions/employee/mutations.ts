@@ -15,6 +15,7 @@ export async function createEmployee(data: CreateEmployeeInput) {
         role: data.role,
         phone: data.phone,
         daily_work_hours: data.daily_work_hours,
+        daily_work_minutes: data.daily_work_minutes,
       },
     });
   } catch (error) {

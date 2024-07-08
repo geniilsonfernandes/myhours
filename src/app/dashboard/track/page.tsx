@@ -6,9 +6,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Link from "next/link";
-
 import { Metadata } from "next";
+import Link from "next/link";
+import Footer from "./footer";
 import Main from "./main";
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: "Gerencie suas horas de trabalho",
 };
 
-const TimeRecordPage = () => {
+const TrackPage = async () => {
   return (
     <>
       <Breadcrumb className="mt-8">
@@ -30,14 +30,14 @@ const TimeRecordPage = () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-
       <Header
         title="Registro de tempo"
         description="Gerencie suas horas de trabalho"
       />
       <Main />
+      <Footer />
     </>
   );
 };
 
-export default TimeRecordPage;
+export default TrackPage;
