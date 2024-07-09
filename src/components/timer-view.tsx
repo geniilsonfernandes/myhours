@@ -18,10 +18,10 @@ const TimerView = ({
 }: TimerViewProps) => {
   return (
     <div className="flex flex-col">
-      <div className="text-md text-sm capitalize text-slate-500">{label} </div>
+      <div className="text-md text-xs capitalize text-slate-500">{label} </div>
       <div
         className={cn(
-          "text-lg font-semibold",
+          "text-md font-semibold",
           variant === "positive" && "text-green-500",
           variant === "negative" && "text-red-500",
           variant === "neutral" && "text-slate-500",

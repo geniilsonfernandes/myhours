@@ -20,7 +20,7 @@ const config = {
     extend: {
       gridTemplateColumns: {
         "auto-fill": "repeat(auto-fill, minmax(250px, 1fr)) ",
-        "4-auto-fill": "repeat(4, minmax(150px, 1fr))",
+        "4-auto-fill": "repeat(4, minmax(50px, 1fr))",
         "2-auto-fill": "repeat(2, minmax(150px, 1fr))",
       },
       colors: {

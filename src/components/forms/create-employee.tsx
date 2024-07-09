@@ -5,8 +5,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { createEmployee } from "@/actions/employee/mutations";
-import { onBlurFormat } from "@/app/shared/format";
-import { workSchema } from "@/app/shared/schema";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { onBlurFormat } from "@/shared/format";
+import { workSchema } from "@/shared/schema";
 
 const FormSchema = z.object({
   username: z.string().min(2, {

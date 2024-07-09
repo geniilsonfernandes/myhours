@@ -9,7 +9,7 @@ const Topbar = () => {
           <Search strokeWidth={1} />
           <input
             placeholder="Pesquisar"
-            className="w-full border-none text-sm outline-none"
+            className="w-full border-none bg-transparent text-sm outline-none"
           />
         </div>
         <div className="flex items-center gap-4">

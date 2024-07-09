@@ -22,8 +22,6 @@ export async function createWorkLog(data: CreateOrUpdateWorkLogInput) {
       },
     });
 
-    console.log(findedLog, "findedLog");
-
     const workLog = await prisma.worklog.upsert({
       where: {
         id: findedLog?.id || "",

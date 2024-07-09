@@ -12,7 +12,6 @@ type ListProps = {
 
 const List = ({ data }: ListProps) => {
   const router = useRouter();
-  console.log(data);
 
   return (
     <DataTable

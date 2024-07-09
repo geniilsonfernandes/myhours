@@ -25,8 +25,6 @@ export async function createEmployee(data: CreateEmployeeInput) {
         daily_work_minutes: data.daily_work_minutes,
       },
     });
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 }
 

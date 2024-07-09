@@ -1,15 +1,25 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { useRef } from "react";
+import { isMobile } from "react-device-detect";
 
 type TimerInputProps = {
   label?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value?: string;
   errorMessage?: string;
+  variant?: "valid" | "invalid" | "default";
+  isError?: boolean;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
-const TimerInput = ({ label, errorMessage, ...props }: TimerInputProps) => {
+const TimerLog = ({
+  label,
+  errorMessage,
+  variant,
+  isError = false,
+  ...props
+}: TimerInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSpanClick = () => {
@@ -20,6 +30,34 @@ const TimerInput = ({ label, errorMessage, ...props }: TimerInputProps) => {
     const [hours, _] = value.split(":").map(Number);
     return hours >= 12;
   };
+
+  const textColor = {
+    valid: "text-green-500",
+    invalid: "text-red-500",
+    default: "text-slate-500",
+    isError: "text-red-500",
+  };
+
+  return (
+    <div
+      className={cn(
+        "flex w-32 flex-col rounded-md bg-slate-100 p-2 px-4",
+        textColor[isError ? "isError" : variant || "default"],
+      )}
+    >
+      <label htmlFor={label} className="text-[12px] text-slate-500">
+        {label}
+      </label>
+
+      <input
+        type={isMobile ? "time" : "text"}
+        className="text-md bg-transparent focus:outline-none focus:ring-0"
+        {...props}
+        ref={inputRef}
+      />
+      <div className="text-[8px]">{errorMessage}</div>
+    </div>
+  );
 
   return (
     <div className="relative">
@@ -61,4 +99,4 @@ const TimerInput = ({ label, errorMessage, ...props }: TimerInputProps) => {
   );
 };
 
-export default TimerInput;
+export default TimerLog;

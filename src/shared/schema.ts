@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { splitTime } from "./format";
 
 export const workSchema = (variant: "hours" | "minutes") => {
   return z.string().refine(
@@ -18,3 +19,25 @@ export const workSchema = (variant: "hours" | "minutes") => {
     },
   );
 };
+
+const validateTime = z.string().refine(
+  (value) => {
+    const { hours, minutes } = splitTime(value);
+
+    if (+hours > 23 || +minutes > 59) {
+      return false;
+    }
+
+    return true;
+  },
+  {
+    message: "Por favor, insira um horário entre 00:00 e 23:59.",
+  },
+);
+
+export const logsSchema = z.object({
+  start_time: validateTime,
+  break_start: validateTime,
+  break_end: validateTime,
+  end_time: validateTime,
+});

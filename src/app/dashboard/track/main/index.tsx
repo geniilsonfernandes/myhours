@@ -28,11 +28,6 @@ const Main = () => {
       "yyyy-MM-dd",
     )}`,
     fetcher,
-    {
-      onSuccess(data, key, config) {
-        console.log(data);
-      },
-    },
   );
 
   const findLog = (day: string) => {
@@ -45,8 +40,6 @@ const Main = () => {
     };
   };
 
-  console.log(weekDays);
-
   return (
     <>
       <div className="mb-8 flex flex-col gap-4 sm:flex-row">
@@ -57,7 +50,7 @@ const Main = () => {
         />
         <UserPicker label="Jussara viana" />
       </div>
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-2">
         {!isLoading &&
           weekDays.map(({ day, weekDay }) => {
             if (weekDay === "sabado" || weekDay === "domingo") return null;

@@ -1,14 +1,18 @@
 "use client";
 
 import { createWorkLog } from "@/actions/worklog/mutations";
+import {
+  createTimestamp,
+  minutesToTime,
+  onBlurFormatTime,
+} from "@/shared/format";
+import { logsSchema } from "@/shared/schema";
 import { WorkLog } from "@/types/models";
-import { debounce } from "@/utils";
 import { formatDate } from "@/utils/dates";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import TimerInput from "./timer-input";
+import TimerInput from "./timer-log";
 import TimerView from "./timer-view";
 import { useToast } from "./ui/use-toast";
 
@@ -18,77 +22,30 @@ type TimerRowProps = {
   disabled?: boolean;
 };
 
-const workSchema = z.object({
-  entrada: z.string(),
-  intervalo: z.string(),
-  retorno: z.string(),
-  saida: z.string(),
-});
-
-function minutesToTime(minutes: number) {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
-}
-
 const TimerRow = ({ day, log, disabled }: TimerRowProps) => {
-  const router = useRouter();
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof workSchema>>({
+  const {
+    formState: { errors },
+    ...form
+  } = useForm<z.infer<typeof logsSchema>>({
     defaultValues: {
-      entrada: log?.start_time ? minutesToTime(log?.start_time) : "00:00",
-      intervalo: log?.break_start ? minutesToTime(log?.break_start) : "00:00",
-      retorno: log?.break_end ? minutesToTime(log?.break_end) : "00:00",
-      saida: log?.end_time ? minutesToTime(log?.end_time) : "00:00",
+      start_time: minutesToTime(log?.start_time || 0),
+      break_start: minutesToTime(log?.break_start || 0),
+      break_end: minutesToTime(log?.break_end || 0),
+      end_time: minutesToTime(log?.end_time || 0),
     },
+    resolver: zodResolver(logsSchema),
+    mode: "onChange",
   });
 
-  const [values, setValues] = useState({
-    entrada: 0,
-    intervalo: 0,
-    retorno: 0,
-    saida: 0,
-  });
-
-  const calculateHoursWorkedAndBalance = useMemo(() => {
-    const expectedDailyHours = 8 * 60 + 50; // Tempo diário esperado em minutos (8 horas e 50 minutos)
-
-    const entrada = values.entrada;
-    const intervalo = values.intervalo;
-    const retorno = values.retorno;
-    const saida = values.saida;
-
-    // Calcular horas trabalhadas
-    const morningWorkMinutes = intervalo - entrada;
-    const afternoonWorkMinutes = saida - retorno;
-    const totalWorkMinutes = morningWorkMinutes + afternoonWorkMinutes;
-
-    // Calcular saldo
-    const balanceMinutes = totalWorkMinutes - expectedDailyHours;
-
-    return {
-      totalWorked: minutesToTime(totalWorkMinutes),
-      balance: minutesToTime(Math.abs(balanceMinutes)),
-      balanceType: balanceMinutes >= 0 ? "positive" : "negative",
-    } as const;
-  }, [values]);
-
-  async function onSubmit(data: z.infer<typeof workSchema>) {
-    const createTimestamp = (time: string) => {
-      if (!time) return 0;
-
-      const [hours, minutes] = time.split(":");
-      return Number(hours) * 60 + Number(minutes);
-    };
-    // end_time
-
+  async function onSubmit(data: z.infer<typeof logsSchema>) {
     try {
       await createWorkLog({
-        break_end: createTimestamp(data.retorno),
-        break_start: createTimestamp(data.intervalo),
-        start_time: createTimestamp(data.entrada),
-        end_time: createTimestamp(data.saida),
+        start_time: createTimestamp(data.start_time),
+        break_start: createTimestamp(data.break_start),
+        break_end: createTimestamp(data.break_end),
+        end_time: createTimestamp(data.break_end),
         total_working_hours: 100,
         employee_id: "e91890a3-3b61-4ce6-b2cb-0ccd9cd2d645",
         date_id: day,
@@ -101,7 +58,6 @@ const TimerRow = ({ day, log, disabled }: TimerRowProps) => {
           : "Registro criado com sucesso.",
         variant: "default",
       });
-      router.refresh();
     } catch (error) {
       console.error(error);
       toast({
@@ -111,77 +67,119 @@ const TimerRow = ({ day, log, disabled }: TimerRowProps) => {
       });
     }
   }
+
   return (
-    <div className="flex flex-col gap-4 px-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="w-32">
+    <div className="flex items-center gap-6 rounded-lg bg-white p-4 shadow-lg shadow-slate-100">
+      <div className="">
         <TimerView
           label={formatDate(day, "ddd")}
           value={day ? formatDate(day, "DD MMMM") : ""}
         />
       </div>
 
-      <div className="grid grid-cols-2-auto-fill gap-4 sm:grid-cols-4-auto-fill">
+      <div className="flex gap-2">
         <Controller
           control={form.control}
-          name="entrada"
+          name="start_time"
           render={({ field }) => (
             <TimerInput
               label="Entrada"
-              onChange={(value) => field.onChange(value)}
+              isError={!!errors.start_time}
+              errorMessage={errors.start_time?.message}
+              placeholder="00:00"
               value={field.value}
-              onBlur={debounce(form.handleSubmit(onSubmit), 1000)}
+              onChange={field.onChange}
+              onBlur={(e) => {
+                if (errors && errors.start_time) {
+                  toast({
+                    description: errors.start_time?.message,
+                    variant: "destructive",
+                  });
+                }
+                onBlurFormatTime(e);
+                field.onChange(onBlurFormatTime(e));
+              }}
             />
           )}
         />
+
         <Controller
           control={form.control}
-          name="intervalo"
+          name="break_start"
           render={({ field }) => (
             <TimerInput
-              label="Intervalo"
-              onChange={(value) => field.onChange(value)}
+              label="Pausa"
+              isError={!!errors.break_start}
+              errorMessage={errors.break_start?.message}
+              placeholder="00:00"
               value={field.value}
-              onBlur={debounce(form.handleSubmit(onSubmit), 1000)}
+              onChange={field.onChange}
+              onBlur={(e) => {
+                if (errors && errors.break_start) {
+                  toast({
+                    description: errors.break_start?.message,
+                    variant: "destructive",
+                  });
+                }
+                onBlurFormatTime(e);
+                field.onChange(onBlurFormatTime(e));
+              }}
             />
           )}
         />
+
         <Controller
           control={form.control}
-          name="retorno"
+          name="break_end"
           render={({ field }) => (
             <TimerInput
-              label="Retorno"
-              onChange={(value) => field.onChange(value)}
+              label="Pausa"
+              isError={!!errors.break_end}
+              errorMessage={errors.break_end?.message}
+              placeholder="00:00"
               value={field.value}
-              onBlur={debounce(form.handleSubmit(onSubmit), 1000)}
+              onChange={field.onChange}
+              onBlur={(e) => {
+                if (errors && errors.break_end) {
+                  toast({
+                    description: errors.break_end?.message,
+                    variant: "destructive",
+                  });
+                }
+                onBlurFormatTime(e);
+                field.onChange(onBlurFormatTime(e));
+              }}
             />
           )}
         />
+
         <Controller
           control={form.control}
-          name="saida"
+          name="end_time"
           render={({ field }) => (
             <TimerInput
-              label="Saida"
-              onChange={(value) => field.onChange(value)}
+              label="Saída"
+              isError={!!errors.end_time}
+              errorMessage={errors.end_time?.message}
+              placeholder="00:00"
               value={field.value}
-              onBlur={debounce(form.handleSubmit(onSubmit), 1000)}
+              onChange={field.onChange}
+              onBlur={(e) => {
+                if (errors && errors.end_time) {
+                  toast({
+                    description: errors.end_time?.message,
+                    variant: "destructive",
+                  });
+                }
+                onBlurFormatTime(e);
+                field.onChange(onBlurFormatTime(e));
+              }}
             />
           )}
         />
-      </div>
-      <div className="flex gap-4 sm:justify-end">
-        <TimerView
-          label="Horas trabalhadas"
-          prefix="H"
-          value={calculateHoursWorkedAndBalance.totalWorked}
-        />
-        <TimerView
-          label="Saldo do dia"
-          prefix="H"
-          value={calculateHoursWorkedAndBalance.balance}
-          variant={calculateHoursWorkedAndBalance.balanceType}
-        />
+        <button className="ml-2" onClick={() => form.handleSubmit(onSubmit)()}>
+          enviar
+        </button>
       </div>
     </div>
   );
