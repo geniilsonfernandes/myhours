@@ -16,7 +16,7 @@ model employee {
   role               Role
   password           String
   createdAt          DateTime  @default(now())
-  updatedAt          DateTime
+  updatedAt          DateTime  @updatedAt
   daily_work_hours   Int       @default(530)
   daily_work_minutes Int       @default(60)
   worklog            worklog[]

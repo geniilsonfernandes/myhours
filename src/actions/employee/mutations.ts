@@ -1,9 +1,16 @@
 "use server";
 
 import { prisma } from "@/lib/services/prisma";
-import { Prisma } from "@prisma/client";
 
-type CreateEmployeeInput = Prisma.employeeCreateInput;
+type CreateEmployeeInput = {
+  email: string;
+  name: string;
+  password: string;
+  role: "ADMIN" | "USER";
+  phone: string;
+  daily_work_hours: number;
+  daily_work_minutes: number;
+};
 
 export async function createEmployee(data: CreateEmployeeInput) {
   try {

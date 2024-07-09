@@ -1,71 +1,104 @@
 "use client";
 
-import { loginAction } from "@/actions/auth/mutations";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-const LoginForm = () => {
-  const router = useRouter();
-  const [error, setError] = useState("");
+import { loginAction } from "@/actions/login/mutations";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
-  async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+const FormSchema = z.object({
+  email: z
+    .string()
+    .email({ message: "Por favor, insira um endereço de email válido." }),
+  password: z.string().min(6, {
+    message: "A senha deve ter pelo menos 6 caracteres.",
+  }),
+});
+
+function LoginForm() {
+  const { toast } = useToast();
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    mode: "onChange",
+    defaultValues: {},
+  });
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      const formData = new FormData(event.currentTarget);
-
-      const response = await loginAction({
-        email: "j@j.com",
-        password: "123",
+      await loginAction({
+        email: data.email,
+        password: data.password,
       });
 
-      if (!!response.error) {
-        console.error(response.error);
-        setError(response.error.message);
-      } else {
-        router.push("/dashboard");
-      }
-    } catch (e) {
-      console.error(e);
-      setError("Check your Credentials");
+      toast({
+        description: "Logado com sucesso!",
+        variant: "default",
+      });
+    } catch (error) {
+      toast({
+        description: "Email ou senha inválidos",
+        title: "Erro",
+        variant: "destructive",
+      });
     }
   }
 
   return (
-    <>
-      <div className="text-xl text-red-500">{error}</div>
+    <Form {...form}>
       <form
-        className="my-5 flex flex-col items-center rounded-md border border-gray-200 p-3"
-        onSubmit={onSubmit}
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="flex h-[95%] flex-col justify-between gap-2 sm:w-3/12"
       >
-        <div className="my-2">
-          <label htmlFor="email">Email Address</label>
-          <input
-            className="mx-2 rounded border border-gray-500"
-            type="email"
-            name="email"
-            id="email"
-          />
-        </div>
+        <h3 className="mb-5 text-2xl font-bold">Login</h3>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="XGw9m@example.com" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <div className="my-2">
-          <label htmlFor="password">Password</label>
-          <input
-            className="mx-2 rounded border border-gray-500"
-            type="password"
-            name="password"
-            id="password"
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Senha</FormLabel>
+              <FormControl>
+                <Input placeholder="********" type="password" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-        <button
+        <Button
+          disabled={form.formState.isSubmitting}
           type="submit"
-          className="mt-4 flex w-36 items-center justify-center rounded bg-orange-300"
+          className="mt-auto w-full"
         >
-          Ceredential Login
-        </button>
+          {form.formState.isSubmitting ? "Criando..." : "Criar"}
+        </Button>
       </form>
-    </>
+    </Form>
   );
-};
+}
 
 export default LoginForm;
