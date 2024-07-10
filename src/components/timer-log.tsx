@@ -41,7 +41,7 @@ const TimerLog = ({
   return (
     <div
       className={cn(
-        "flex w-32 flex-col rounded-md bg-slate-100 p-2 px-4",
+        "flex flex-col rounded-md bg-slate-100 p-2 px-4 sm:w-32",
         textColor[isError ? "isError" : variant || "default"],
       )}
     >

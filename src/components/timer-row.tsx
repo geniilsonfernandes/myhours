@@ -14,6 +14,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import TimerInput from "./timer-log";
 import TimerView from "./timer-view";
+import { Button } from "./ui/button";
 import { useToast } from "./ui/use-toast";
 
 type TimerRowProps = {
@@ -69,7 +70,7 @@ const TimerRow = ({ day, log, disabled }: TimerRowProps) => {
   }
 
   return (
-    <div className="flex items-center gap-6 rounded-lg bg-white p-4 shadow-lg shadow-slate-100">
+    <div className="flex flex-col gap-6 rounded-lg bg-white p-4 shadow-lg shadow-slate-100 sm:flex-row sm:items-center">
       <div className="">
         <TimerView
           label={formatDate(day, "ddd")}
@@ -77,7 +78,7 @@ const TimerRow = ({ day, log, disabled }: TimerRowProps) => {
         />
       </div>
 
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <Controller
           control={form.control}
           name="start_time"
@@ -177,10 +178,10 @@ const TimerRow = ({ day, log, disabled }: TimerRowProps) => {
             />
           )}
         />
-        <button className="ml-2" onClick={() => form.handleSubmit(onSubmit)()}>
-          enviar
-        </button>
       </div>
+      <Button className="ml-2" onClick={() => form.handleSubmit(onSubmit)()}>
+        Salvar
+      </Button>
     </div>
   );
 };

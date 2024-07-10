@@ -1,6 +1,7 @@
 import { Bell, Search } from "lucide-react";
 import { UserNav } from "./user-nav";
 
+
 const Topbar = () => {
   return (
     <header className="mb-4 border-b border-slate-200">

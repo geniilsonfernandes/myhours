@@ -61,3 +61,20 @@ export async function createWorkLog(data: CreateOrUpdateWorkLogInput) {
     throw new Error("Failed to create or update work log");
   }
 }
+
+
+export async function patchWorkLog(key: string, id: string, value: string) {
+  try {
+    await prisma.worklog.update({
+      where: {
+        id: key,
+      },
+      data: {
+        [key]: value,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    throw new Error("Failed to patch work log");
+  }
+}
