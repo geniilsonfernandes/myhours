@@ -54,6 +54,16 @@ const LogInput = ({
           type={isMobile ? "time" : "text"}
           className="text-md w-full bg-transparent focus:outline-none focus:ring-0"
           disabled={isLoading}
+          onChange={
+            isMobile
+              ? props.onChange
+              : (e) => {
+                  const split = props.value?.split(":") || [,];
+                  e.target.value = `${split[0]}${split[1]}`;
+
+                  props.onChange?.(e);
+                }
+          }
           {...props}
           ref={inputRef}
         />
