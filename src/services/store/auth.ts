@@ -1,3 +1,5 @@
+"use client";
+
 import { IUser } from "@/types/user";
 import { create } from "zustand";
 type State = {
@@ -21,7 +23,10 @@ const authStore = create<State & Action>((set) => ({
   },
 }));
 
-const getUser = JSON.parse(localStorage.getItem("user") || "{}");
-authStore.setState({ user: getUser });
+if (window !== undefined) {
+  authStore.setState({
+    user: JSON.parse(localStorage.getItem("user") || "{}"),
+  });
+}
 
 export default authStore;
