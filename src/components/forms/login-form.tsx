@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
   email: z
@@ -27,6 +28,7 @@ const FormSchema = z.object({
 });
 
 function LoginForm() {
+  const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -36,11 +38,14 @@ function LoginForm() {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     try {
-      await loginAction({
+      const session = await loginAction({
         email: data.email,
         password: data.password,
       });
 
+      window.localStorage.setItem("@myHourly:session", session);
+
+      router.push("/dashboard");
       toast({
         description: "Logado com sucesso!",
         variant: "default",

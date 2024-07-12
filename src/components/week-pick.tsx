@@ -45,7 +45,7 @@ const WeekPick = ({ onWeekChange }: WeekPickProps) => {
   };
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex w-full items-center gap-4">
       <Button
         onClick={handleSetThisWeek}
         className="border border-slate-300 p-4"
@@ -54,8 +54,8 @@ const WeekPick = ({ onWeekChange }: WeekPickProps) => {
         <Home strokeWidth={1} size={16} />
       </Button>
       <Popover>
-        <PopoverTrigger>
-          <div className="inline-flex w-[250px] cursor-pointer items-center justify-between gap-4 rounded-md border border-slate-300 text-sm text-slate-500">
+        <PopoverTrigger className="w-full">
+          <div className="inline-flex w-full cursor-pointer items-center justify-between gap-4 rounded-md border border-slate-300 text-sm text-slate-500 sm:w-[250px]">
             <div
               onClick={handleWeekChange.bind(null, "previous")}
               className="flex h-10 w-10 items-center justify-center rounded-md hover:bg-slate-100"

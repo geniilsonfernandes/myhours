@@ -63,16 +63,65 @@ export async function createWorkLog(data: CreateOrUpdateWorkLogInput) {
 }
 
 
-export async function patchWorkLog(key: string, id: string, value: string) {
+type PatchWorkLogInput = {
+  key_id: "start_time" | "end_time" | "break_start" | "break_end";
+  value: number;
+  date_id: string;
+  log_id?: string;
+  user_id?: string;
+};
+export async function patchWorkLog({
+  key_id,
+  value,
+  date_id,
+  log_id,
+  user_id,
+}: PatchWorkLogInput) {
   try {
-    await prisma.worklog.update({
+    const logAlreadyExists = await prisma.worklog.findFirst({
       where: {
-        id: key,
-      },
-      data: {
-        [key]: value,
+        OR: [
+          {
+            id: log_id || "",
+          },
+          {
+            date: new Date(date_id).toISOString(),
+            employee_id: user_id,
+          },
+        ],
       },
     });
+
+    if (!logAlreadyExists) {
+      await prisma.worklog.create({
+        data: {
+          date: new Date(date_id).toISOString(),
+          total_working_hours: 100,
+          [key_id]: value,
+          employee: {
+            connect: {
+              id: user_id,
+            },
+          },
+        },
+      });
+      return {
+        message: "Log criado com sucesso",
+      };
+    }
+
+    await prisma.worklog.update({
+      where: {
+        id: logAlreadyExists.id || log_id,
+      },
+      data: {
+        [key_id]: value,
+      },
+    });
+
+    return {
+      message: "Log atualizado com sucesso",
+    };
   } catch (error) {
     console.error(error);
     throw new Error("Failed to patch work log");

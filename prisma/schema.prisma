@@ -25,10 +25,10 @@ model employee {
 model worklog {
   id                  String    @id @default(uuid())
   date                DateTime  @db.Date
-  start_time          Int
-  end_time            Int
-  break_start         Int
-  break_end           Int
+  start_time          Int?
+  end_time            Int?
+  break_start         Int?
+  break_end           Int?
   total_working_hours Int
   created_at          DateTime  @default(now())
   updated_at          DateTime  @updatedAt
