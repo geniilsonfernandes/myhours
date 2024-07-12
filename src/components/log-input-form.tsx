@@ -48,7 +48,7 @@ const LogInputForm = ({
 
   async function onSubmit(data: z.infer<typeof logSchema>) {
     const timestamp = createTimestamp(data.log_time);
-    if (timestamp === 0 || timestamp === value) {
+    if (data.log_time === "" || timestamp === value) {
       return;
     }
 

@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils";
 import { CircleAlert, LoaderCircle } from "lucide-react";
 import { useRef } from "react";
-import { isMobile } from "react-device-detect";
 import {
   Tooltip,
   TooltipContent,
@@ -51,19 +50,9 @@ const LogInput = ({
 
       <div className="relative flex items-center gap-2">
         <input
-          type={isMobile ? "time" : "text"}
+          type="text"
           className="text-md w-full bg-transparent focus:outline-none focus:ring-0"
           disabled={isLoading}
-          onChange={
-            isMobile
-              ? props.onChange
-              : (e) => {
-                  const split = props.value?.split(":") || [,];
-                  e.target.value = `${split[0]}${split[1]}`;
-
-                  props.onChange?.(e);
-                }
-          }
           {...props}
           ref={inputRef}
         />

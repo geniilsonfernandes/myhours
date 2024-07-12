@@ -9,7 +9,6 @@ export const splitTime = (
   time: string,
 ): { hours: string; minutes: string; suffix: string } => {
   const onlyNumbers = time.replace(/[^0-9]/g, "");
-  console.log(onlyNumbers);
 
   if (onlyNumbers.length === 0) {
     return {

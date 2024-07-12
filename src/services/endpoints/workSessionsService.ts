@@ -49,6 +49,6 @@ export const getWorkSessions = async (
 
     return { logs: dates, range: data.range };
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
