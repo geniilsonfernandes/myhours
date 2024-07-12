@@ -23,7 +23,7 @@ const authStore = create<State & Action>((set) => ({
   },
 }));
 
-if (window !== undefined) {
+if (typeof window !== "undefined") {
   authStore.setState({
     user: JSON.parse(localStorage.getItem("user") || "{}"),
   });
