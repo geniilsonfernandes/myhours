@@ -1,8 +1,10 @@
+import { getSession } from "@/lib";
 import { Bell, Search } from "lucide-react";
 import { UserNav } from "./user-nav";
 
+const Topbar = async () => {
+  const session = await getSession();
 
-const Topbar = () => {
   return (
     <header className="mb-4 border-b border-slate-200">
       <div className="container flex items-center justify-between py-4">
@@ -20,7 +22,7 @@ const Topbar = () => {
           >
             <Bell strokeWidth={1} />
           </button>
-          <UserNav />
+          <UserNav user={session?.user || null} />
         </div>
       </div>
     </header>

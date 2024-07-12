@@ -29,7 +29,15 @@ export async function loginAction({ email, password }: LoginInput) {
 
     // Create the session
     const expires = new Date(Date.now() + 3600 * 1000);
-    const session = await encrypt({ finduser, expires });
+    const session = await encrypt({
+      user: {
+        id: finduser.id,
+        name: finduser.name,
+        email: finduser.email,
+        role: finduser.role,
+      },
+      expires,
+    });
 
     // Save the session in a cookie
     cookies().set("session", session, { expires, httpOnly: true });
