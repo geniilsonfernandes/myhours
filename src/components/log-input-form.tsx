@@ -74,6 +74,7 @@ const LogInputForm = ({
       });
     }
   }
+  console.log(errors.log_time);
 
   return (
     <Controller

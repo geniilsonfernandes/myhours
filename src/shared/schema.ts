@@ -20,7 +20,7 @@ export const workSchema = (variant: "hours" | "minutes") => {
         }[variant],
       },
     )
-    .isOptional();
+
     
 };
 

@@ -57,7 +57,7 @@ export const splitTime = (
 
 export const onBlurFormatTime = (e: React.FocusEvent<HTMLInputElement>) => {
   if (!e.target.value) {
-    return;
+    return "";
   }
 
   const { hours, minutes, suffix } = splitTime(e.target.value);
