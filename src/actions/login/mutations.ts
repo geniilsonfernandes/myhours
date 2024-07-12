@@ -41,7 +41,14 @@ export async function loginAction({ email, password }: LoginInput) {
 
     // Save the session in a cookie
     cookies().set("session", session, { expires, httpOnly: true });
-    return session;
+    return {
+      user: {
+        id: finduser.id,
+        name: finduser.name,
+        email: finduser.email,
+        role: finduser.role,
+      },
+    };
   } catch (error) {
     console.error(error);
     throw new LoginError("Email ou senha inválidos");

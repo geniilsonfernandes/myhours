@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import authStore from "@/services/store/auth";
 import { useRouter } from "next/navigation";
 
 const FormSchema = z.object({
@@ -28,6 +29,7 @@ const FormSchema = z.object({
 });
 
 function LoginForm() {
+  const { setUser } = authStore();
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -43,8 +45,13 @@ function LoginForm() {
         password: data.password,
       });
 
-      window.localStorage.setItem("@myHourly:session", session);
-
+      window.localStorage.setItem("@myHourly:session", JSON.stringify(session));
+      setUser({
+        email: session.user.email,
+        id: session.user.id,
+        name: session.user.name,
+        role: session.user.role,
+      });
       router.push("/dashboard");
       toast({
         description: "Logado com sucesso!",

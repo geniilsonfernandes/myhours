@@ -1,7 +1,7 @@
 "use client";
 
 import { Toaster } from "@/components/ui/toaster";
-import queryClient from "@/lib/store";
+import queryClient from "@/services/http";
 import { QueryClientProvider } from "@tanstack/react-query";
 
 export function Providers({

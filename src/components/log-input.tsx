@@ -41,7 +41,7 @@ const LogInput = ({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-md bg-slate-100 p-2 px-4",
+        "flex h-[58px] flex-col rounded-md bg-slate-100 p-2 px-4 sm:w-[200px]",
         textColor[isError ? "isError" : variant || "default"],
       )}
     >

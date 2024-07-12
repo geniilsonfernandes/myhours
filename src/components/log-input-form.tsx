@@ -9,6 +9,7 @@ import LogInput from "./log-input";
 import { useToast } from "./ui/use-toast";
 
 import { patchWorkLog } from "@/actions/worklog/mutations";
+import { updateSessions } from "@/services/query/useWorkSessions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
@@ -31,7 +32,6 @@ const LogInputForm = ({
   date_id,
   log_id,
   user_id,
-  isLoading,
 }: LogInputFormProps) => {
   const { toast } = useToast();
 
@@ -60,13 +60,12 @@ const LogInputForm = ({
         date_id,
         ...(log_id && { log_id: log_id }),
       });
-
+      await updateSessions();
       toast({
         description: "Registro atualizado com sucesso.",
         variant: "default",
       });
     } catch (error) {
-      console.error(error);
       toast({
         description: "Ocorreu um erro no registro.",
         title: "Erro",
@@ -74,7 +73,13 @@ const LogInputForm = ({
       });
     }
   }
-  console.log(errors.log_time);
+
+  const labels = {
+    start_time: "Entrada",
+    end_time: "Saída",
+    break_start: "Inicio do intervalo",
+    break_end: "Fim para intervalo",
+  };
 
   return (
     <Controller
@@ -82,7 +87,7 @@ const LogInputForm = ({
       control={form.control}
       render={({ field }) => (
         <LogInput
-          label="Saída"
+          label={labels[key_id]}
           placeholder="00:00"
           value={field.value}
           errorMessage={errors.log_time?.message}

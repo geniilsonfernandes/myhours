@@ -1,58 +1,30 @@
 "use client";
 
 import TimerRow from "@/components/timer-row";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserPicker from "@/components/user-picker";
 import WeekPick, { WeekPickRange } from "@/components/week-pick";
 import useWeekDays from "@/hooks/useWeekDays";
-import { IWorklog } from "@/types/models";
-import { useQuery } from "@tanstack/react-query";
+import useWorkSessions from "@/services/query/useWorkSessions";
+import authStore from "@/services/store/auth";
 
-import axios from "axios";
 import { endOfWeek, format, startOfWeek } from "date-fns";
-import dayjs from "dayjs";
+import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 
-const fetcher = (...args: Parameters<typeof axios.get>) =>
-  axios.get(...args).then((res) => res.data);
-
-const getLogByPeriod = async (from: string, to: string) => {
-  const response = await axios.get("/api/worklog", {
-    params: {
-      from,
-      to,
-    },
-  });
-
-  return response.data;
-};
-
 const Main = () => {
+  const { user } = authStore();
   const [selectedWeek, setSelectedWeek] = useState<WeekPickRange>({
     from: startOfWeek(new Date()),
     to: endOfWeek(new Date()),
   });
+
   const weekDays = useWeekDays(selectedWeek);
 
-  const { data, isLoading, isPending, refetch } = useQuery({
-    queryKey: ["worklog", selectedWeek.from],
-    queryFn: () => {
-      return getLogByPeriod(
-        format(selectedWeek.from, "yyyy-MM-dd"),
-        format(selectedWeek.to, "yyyy-MM-dd"),
-      );
-    },
+  const { data, isLoading, isFetching } = useWorkSessions({
+    from: format(selectedWeek.from, "yyyy-MM-dd"),
+    to: format(selectedWeek.to, "yyyy-MM-dd"),
   });
-
-  const findLog = (day: string) => {
-    const findLog = data?.logs?.find(
-      (log: IWorklog) => dayjs(log.date).format("YYYY-MM-DD") === day,
-    );
-    return {
-      ...findLog,
-    };
-  };
 
   return (
     <>
@@ -63,9 +35,10 @@ const Main = () => {
               setSelectedWeek({ from, to });
             }}
           />
-          <UserPicker label="Jussara viana" />
+          <UserPicker label={user?.name} />
         </div>
-        <div>
+        <div className="flex items-center gap-4">
+          {isFetching && <LoaderCircle className="animate-spin" size={16} />}
           <Tabs defaultValue="week">
             <TabsList>
               <TabsTrigger
@@ -84,35 +57,24 @@ const Main = () => {
           </Tabs>
         </div>
       </div>
-      {isLoading && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Skeleton className="h-40 w-full animate-pulse rounded-lg bg-slate-300" />
-          <Skeleton className="h-40 w-full animate-pulse rounded-lg bg-slate-300" />
-          <Skeleton className="h-40 w-full animate-pulse rounded-lg bg-slate-300" />
-          <Skeleton className="h-40 w-full animate-pulse rounded-lg bg-slate-300" />
-          <Skeleton className="h-40 w-full animate-pulse rounded-lg bg-slate-300" />
-          <Skeleton className="h-40 w-full animate-pulse rounded-lg bg-slate-300" />
-        </div>
-      )}
-      {!isLoading && (
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-          {weekDays.map(({ day, weekDay }) => {
-            if (weekDay === "sábado" || weekDay === "domingo") {
-              return null;
-            }
-            return (
-              <TimerRow
-                key={day}
-                day={day}
-                isLoading={isLoading}
-                log={findLog(day)}
-                from={format(selectedWeek.from, "yyyy-MM-dd")}
-                disabled={weekDay === "sábado" || weekDay === "domingo"}
-              />
-            );
-          })}
-        </div>
-      )}
+
+      <div className="grid grid-cols-1 gap-2">
+        {weekDays.map(({ day, weekDay }) => {
+          if (weekDay === "sábado" || weekDay === "domingo") {
+            return null;
+          }
+          return (
+            <TimerRow
+              sessions={data}
+              key={day}
+              day={day}
+              isLoading={isLoading}
+              from={format(selectedWeek.from, "yyyy-MM-dd")}
+              disabled={weekDay === "sábado" || weekDay === "domingo"}
+            />
+          );
+        })}
+      </div>
     </>
   );
 };
