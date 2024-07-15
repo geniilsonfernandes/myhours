@@ -1,14 +1,15 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { CircleAlert, LoaderCircle } from "lucide-react";
-import { useRef } from "react";
+import { isPMorAM } from "@/utils";
+import { CircleAlert, Clock, LoaderCircle } from "lucide-react";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "./tooltip";
 
 type TimerInputProps = {
   label?: string;
@@ -28,8 +29,6 @@ const LogInput = ({
   isLoading = false,
   ...props
 }: TimerInputProps) => {
-  const inputRef = useRef<HTMLInputElement>(null);
-
   const textColor = {
     valid: "text-green-500",
     invalid: "text-red-500",
@@ -40,7 +39,7 @@ const LogInput = ({
   return (
     <div
       className={cn(
-        "flex h-[58px] flex-col rounded-md bg-slate-100 p-2 px-4 sm:w-[200px]",
+        "flex h-[58px] flex-col rounded-md bg-slate-100 p-2 sm:w-[200px]",
         textColor[isError ? "isError" : variant || "default"],
       )}
     >
@@ -48,16 +47,23 @@ const LogInput = ({
         {label}
       </label>
 
-      <div className="relative flex items-center gap-2">
+      <div className="relative mt-1 flex items-center gap-2">
         <input
-          type="text"
-          className="text-md w-full bg-transparent focus:outline-none focus:ring-0"
-          disabled={isLoading}
+          type="time"
+          className="text-md w-full bg-transparent text-sm focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={props.disabled || isLoading}
           {...props}
-          ref={inputRef}
+        />
+        <span className="absolute left-12 top-1/2 -translate-y-1/2 text-sm">
+          {isPMorAM(props.value || "00:00")}
+        </span>
+
+        <Clock
+          size={16}
+          className="pointer-events-none invisible absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer sm:visible"
         />
         {isLoading && (
-          <span className="absolute right-2 top-1/2 -translate-y-1/2">
+          <span className="absolute right-8 top-1/2 -translate-y-1/2">
             <LoaderCircle className="animate-spin" size={16} />
           </span>
         )}
@@ -65,7 +71,10 @@ const LogInput = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <CircleAlert size={16} />
+                <CircleAlert
+                  size={16}
+                  className="absolute right-14 top-1/2 -translate-y-1/2"
+                />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{errorMessage}</p>

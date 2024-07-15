@@ -29,7 +29,6 @@ model worklog {
   end_time            Int?
   break_start         Int?
   break_end           Int?
-  total_working_hours Int
   created_at          DateTime  @default(now())
   updated_at          DateTime  @updatedAt
 

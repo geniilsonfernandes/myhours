@@ -2,8 +2,11 @@
 
 import { cn } from "@/lib/utils";
 import { WorkSession } from "@/services/endpoints/workSessionsService";
+import authStore from "@/services/store/auth";
 import { WorkLog } from "@/types/models";
+import { calculateExtraTime, calculateTotalWorking } from "@/utils";
 import { formatDate } from "@/utils/dates";
+import { Hourglass, Timer } from "lucide-react";
 import LogInputForm from "./log-input-form";
 import TimerView from "./timer-view";
 import { Skeleton } from "./ui/skeleton";
@@ -13,22 +16,22 @@ type TimerRowProps = {
   log?: WorkLog;
   disabled?: boolean;
   isLoading?: boolean;
+  fetching?: boolean;
   from?: string;
   sessions?: WorkSession;
 };
 
 const TimerRow = ({
   day,
-
   disabled,
   isLoading,
   sessions,
+  fetching,
 }: TimerRowProps) => {
-  const user_id = "31888f10-11a3-4701-bde6-efd0b9e8264a";
-
+  const { user } = authStore((state) => state);
   const date_id = formatDate(day, "YYYY-MM-DD");
-
   const log = sessions?.logs[date_id] || null;
+
   return (
     <div
       className={cn(
@@ -61,36 +64,93 @@ const TimerRow = ({
               key_id="start_time"
               value={log?.start_time === 0 ? 0 : log?.start_time || null}
               date_id={day}
-              user_id={user_id}
+              user_id={user?.id}
               log_id={log?.id}
               isLoading={isLoading}
+              disabled={fetching}
+              log={{
+                start_time: log?.start_time || 0,
+                end_time: log?.end_time || 0,
+                break_start: log?.break_start || 0,
+                break_end: log?.break_end || 0,
+              }}
             />
             <LogInputForm
               key_id="break_start"
               value={log?.break_start === 0 ? 0 : log?.break_start || null}
               date_id={day}
-              user_id={user_id}
+              user_id={user?.id}
               log_id={log?.id}
               isLoading={isLoading}
+              disabled={fetching}
+              log={{
+                start_time: log?.start_time || 0,
+                end_time: log?.end_time || 0,
+                break_start: log?.break_start || 0,
+                break_end: log?.break_end || 0,
+              }}
             />
             <LogInputForm
               key_id="break_end"
               value={log?.break_end === 0 ? 0 : log?.break_end || null}
               date_id={day}
-              user_id={user_id}
+              user_id={user?.id}
               log_id={log?.id}
               isLoading={isLoading}
-            />
-            <LogInputForm
-              key_id="end_time"
-              value={log?.end_time === 0 ? 0 : log?.end_time || null}
-              date_id={day}
-              user_id={user_id}
-              log_id={log?.id}
-              isLoading={isLoading}
+              disabled={fetching}
+              log={{
+                start_time: log?.start_time || 0,
+                end_time: log?.end_time || 0,
+                break_start: log?.break_start || 0,
+                break_end: log?.break_end || 0,
+              }}
             />
           </div>
-          <div>....</div>
+          <LogInputForm
+            key_id="end_time"
+            value={log?.end_time === 0 ? 0 : log?.end_time || null}
+            date_id={day}
+            user_id={user?.id}
+            log_id={log?.id}
+            isLoading={isLoading}
+            disabled={fetching}
+            log={{
+              start_time: log?.start_time || 0,
+              end_time: log?.end_time || 0,
+              break_start: log?.break_start || 0,
+              break_end: log?.break_end || 0,
+            }}
+          />
+          <div className="mt-4 flex gap-4 border-slate-200 sm:mt-0 sm:border-l sm:pl-4">
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100/50 text-green-500">
+                <Hourglass strokeWidth={1} />
+              </span>
+              <TimerView
+                label="tempo trabalhado"
+                value={calculateTotalWorking({
+                  break_end: log?.break_end || 0,
+                  break_start: log?.break_start || 0,
+                  end_time: log?.end_time || 0,
+                  start_time: log?.start_time || 0,
+                })}
+              />
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100/50 text-blue-500">
+                <Timer strokeWidth={1} />
+              </span>
+              <TimerView
+                label="tempo extra"
+                value={calculateExtraTime({
+                  break_end: log?.break_end || 0,
+                  break_start: log?.break_start || 0,
+                  end_time: log?.end_time || 0,
+                  start_time: log?.start_time || 0,
+                })}
+              />
+            </div>
+          </div>
         </div>
       )}
     </div>

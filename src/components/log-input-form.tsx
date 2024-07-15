@@ -1,20 +1,15 @@
-import {
-  createTimestamp,
-  minutesToTime,
-  onBlurFormatTime,
-} from "@/shared/format";
-import { validateTime } from "@/shared/schema";
-import { Controller, useForm } from "react-hook-form";
-import LogInput from "./log-input";
-import { useToast } from "./ui/use-toast";
-
 import { patchWorkLog } from "@/actions/worklog/mutations";
 import { updateSessions } from "@/services/query/useWorkSessions";
+import { minutesToTimeString, timeStringToMinutes } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { isMobile } from "react-device-detect";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import LogInput from "./ui/log-input";
+import { useToast } from "./ui/use-toast";
 
 const logSchema = z.object({
-  log_time: validateTime,
+  log_time: z.string(),
 });
 
 type LogInputFormProps = {
@@ -24,6 +19,14 @@ type LogInputFormProps = {
   log_id?: string;
   user_id?: string;
   isLoading?: boolean;
+  disabled?: boolean;
+  variant?: "end" | "start" | "break";
+  log: {
+    start_time: number;
+    end_time: number;
+    break_start: number;
+    break_end: number;
+  };
 };
 
 const LogInputForm = ({
@@ -31,7 +34,9 @@ const LogInputForm = ({
   value,
   date_id,
   log_id,
+  disabled,
   user_id,
+  log,
 }: LogInputFormProps) => {
   const { toast } = useToast();
 
@@ -40,15 +45,68 @@ const LogInputForm = ({
     ...form
   } = useForm<z.infer<typeof logSchema>>({
     defaultValues: {
-      log_time: value !== null ? minutesToTime(value || 0) : "",
+      log_time: minutesToTimeString(value || 0),
     },
     resolver: zodResolver(logSchema),
     mode: "onChange",
   });
 
-  async function onSubmit(data: z.infer<typeof logSchema>) {
-    const timestamp = createTimestamp(data.log_time);
-    if (data.log_time === "" || timestamp === value) {
+  async function onSubmit({ log_time }: z.infer<typeof logSchema>) {
+    const timestamp = timeStringToMinutes(log_time);
+
+    if (key_id === "start_time" && timestamp > log?.end_time) {
+      toast({
+        description: "A hora de entrada deve ser maior que a hora de saida.",
+        title: "Erro",
+        variant: "destructive",
+      });
+      form.setError("log_time", {
+        message: "A hora de entrada deve ser maior que a hora de saida.",
+      });
+      return;
+    }
+
+    if (key_id === "end_time" && timestamp < log?.start_time) {
+      toast({
+        description: "A hora de entrada deve ser maior que a hora de saida.",
+        title: "Erro",
+        variant: "destructive",
+      });
+      form.setError("log_time", {
+        message: "A hora de entrada deve ser maior que a hora de saida.",
+      });
+      return;
+    }
+
+    if (key_id === "break_start" && timestamp > log?.break_end) {
+      toast({
+        description:
+          "A hora de entrada deve ser maior que a hora de inicio do intervalo.",
+        title: "Erro",
+        variant: "destructive",
+      });
+      form.setError("log_time", {
+        message:
+          "A hora de entrada deve ser maior que a hora de inicio do intervalo.",
+      });
+      return;
+    }
+
+    if (key_id === "break_end" && timestamp < log?.break_start) {
+      toast({
+        description:
+          "A hora de entrada deve ser maior que a hora de inicio do intervalo.",
+        title: "Erro",
+        variant: "destructive",
+      });
+      form.setError("log_time", {
+        message:
+          "A hora de entrada deve ser maior que a hora de inicio do intervalo.",
+      });
+      return;
+    }
+
+    if (log_time === "" || timestamp === value) {
       return;
     }
 
@@ -56,7 +114,7 @@ const LogInputForm = ({
       await patchWorkLog({
         key_id,
         user_id,
-        value: createTimestamp(data.log_time),
+        value: timestamp,
         date_id,
         ...(log_id && { log_id: log_id }),
       });
@@ -78,7 +136,7 @@ const LogInputForm = ({
     start_time: "Entrada",
     end_time: "Saída",
     break_start: "Inicio do intervalo",
-    break_end: "Fim para intervalo",
+    break_end: "Fim do intervalo",
   };
 
   return (
@@ -92,19 +150,19 @@ const LogInputForm = ({
           value={field.value}
           errorMessage={errors.log_time?.message}
           isLoading={isSubmitting}
+          disabled={disabled}
           isError={!!errors.log_time}
-          onChange={field.onChange}
-          onBlur={(e) => {
-            if (errors && errors.log_time) {
-              toast({
-                description: errors.log_time?.message,
-                variant: "destructive",
-              });
-            }
-            onBlurFormatTime(e);
-            field.onChange(onBlurFormatTime(e));
-            form.handleSubmit(onSubmit)();
-          }}
+          {...(isMobile
+            ? {
+                onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+                  field.onChange(e.target.value);
+                  form.handleSubmit(onSubmit)();
+                },
+              }
+            : {
+                onChange: field.onChange,
+                onBlur: form.handleSubmit(onSubmit),
+              })}
         />
       )}
     />
