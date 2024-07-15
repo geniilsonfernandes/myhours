@@ -9,7 +9,6 @@ export type CreateOrUpdateWorkLogInput = {
   end_time: number;
   break_start: number;
   break_end: number;
-  total_working_hours: number;
   id?: string;
 };
 
@@ -33,7 +32,6 @@ export async function createWorkLog(data: CreateOrUpdateWorkLogInput) {
         end_time: data.end_time,
         break_start: data.break_start,
         break_end: data.break_end,
-        total_working_hours: data.total_working_hours,
         employee: {
           connect: {
             id: data.employee_id,
@@ -45,7 +43,6 @@ export async function createWorkLog(data: CreateOrUpdateWorkLogInput) {
         end_time: data.end_time,
         break_start: data.break_start,
         break_end: data.break_end,
-        total_working_hours: 100,
         date: new Date(data.date_id).toISOString(),
         employee: {
           connect: {
@@ -57,11 +54,9 @@ export async function createWorkLog(data: CreateOrUpdateWorkLogInput) {
 
     return workLog;
   } catch (error) {
-    console.error(error);
     throw new Error("Failed to create or update work log");
   }
 }
-
 
 type PatchWorkLogInput = {
   key_id: "start_time" | "end_time" | "break_start" | "break_end";
@@ -96,7 +91,6 @@ export async function patchWorkLog({
       await prisma.worklog.create({
         data: {
           date: new Date(date_id).toISOString(),
-          total_working_hours: 100,
           [key_id]: value,
           employee: {
             connect: {
@@ -123,7 +117,6 @@ export async function patchWorkLog({
       message: "Log atualizado com sucesso",
     };
   } catch (error) {
-    console.error(error);
     throw new Error("Failed to patch work log");
   }
 }

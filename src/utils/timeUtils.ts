@@ -1,7 +1,6 @@
 export const timeStringToMinutes = (time: string) => {
   const onlyNumbers = time.replace(/[^0-9]/g, "");
   const match = onlyNumbers.match(/^(\d{1,2})(\d{0,9999})$/);
-  console.log({ match });
 
   if (!match) {
     return 0;
@@ -10,7 +9,10 @@ export const timeStringToMinutes = (time: string) => {
   return Number(hours) * 60 + Number(minutes);
 };
 
-export const minutesToTimeString = (minutes: number) => {
+export const minutesToTimeString = (minutes?: number) => {
+  if (!minutes) {
+    return "";
+  }
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
 
@@ -53,6 +55,10 @@ export const calculateExtraTime = ({
     return "00:00";
   }
 
+  if (end_time < start_time) {
+    return "00:00";
+  }
+
   return minutesToTimeString(total - expectedTime);
 };
 
@@ -74,10 +80,6 @@ export const calculateTotalWorking = ({
   }
 
   const total = end_time - start_time - break_time;
-
-  console.log({
-    total,
-  });
 
   return minutesToTimeString(total);
 };

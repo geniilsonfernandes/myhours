@@ -67,7 +67,6 @@ export const onBlurFormatTime = (e: React.FocusEvent<HTMLInputElement>) => {
 export const createTimestamp = (time: string) => {
   const onlyNumbers = time.replace(/[^0-9]/g, "");
   const match = onlyNumbers.match(/^(\d{1,2})(\d{0,9999})$/);
-  console.log({ match });
 
   if (!match) {
     return 0;

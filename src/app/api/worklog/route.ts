@@ -9,8 +9,9 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
+  const user_id = searchParams.get("user_id");
 
-  if (!from || !to) {
+  if (!from || !to || !user_id) {
     return Response.json({
       error: "Missing parameters",
     });
@@ -23,6 +24,7 @@ export async function GET(request: Request) {
 
   const response = await prisma.worklog.findMany({
     where: {
+      employee_id: user_id,
       date: {
         gte: range.from,
         lte: range.to,

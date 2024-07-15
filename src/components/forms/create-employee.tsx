@@ -18,6 +18,13 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { onBlurFormat } from "@/shared/format";
 import { workSchema } from "@/shared/schema";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const FormSchema = z.object({
   username: z.string().min(2, {
@@ -29,7 +36,7 @@ const FormSchema = z.object({
   password: z.string().min(6, {
     message: "A senha deve ter pelo menos 6 caracteres.",
   }),
-
+  role: z.enum(["ADMIN", "USER"]),
   daily_work_hours: workSchema("hours"),
   daily_work_minutes: workSchema("minutes"),
 });
@@ -110,6 +117,27 @@ function CreateEmployee() {
                 <Input placeholder="********" type="password" {...field} />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="role"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Permissão</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a permissão" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="ADMIN">Administrador</SelectItem>
+                  <SelectItem value="USER">Funcionário</SelectItem>
+                </SelectContent>
+              </Select>
             </FormItem>
           )}
         />

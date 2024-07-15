@@ -60,10 +60,10 @@ const LogInput = ({
 
         <Clock
           size={16}
-          className="pointer-events-none invisible absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer sm:visible"
+          className="pointer-events-none invisible absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer sm:visible"
         />
         {isLoading && (
-          <span className="absolute right-8 top-1/2 -translate-y-1/2">
+          <span className="absolute right-5 top-1/2 -translate-y-1/2">
             <LoaderCircle className="animate-spin" size={16} />
           </span>
         )}
@@ -73,7 +73,7 @@ const LogInput = ({
               <TooltipTrigger>
                 <CircleAlert
                   size={16}
-                  className="absolute right-14 top-1/2 -translate-y-1/2"
+                  className="absolute right-10 top-1/2 -translate-y-1/2"
                 />
               </TooltipTrigger>
               <TooltipContent>

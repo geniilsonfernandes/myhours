@@ -39,7 +39,7 @@ const Main = () => {
           />
           <UserPicker label={user?.name} />
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-end gap-4">
           {isFetching && <LoaderCircle className="animate-spin" size={16} />}
           <Tabs defaultValue={"week"} value={tab}>
             <TabsList>

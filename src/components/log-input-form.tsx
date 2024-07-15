@@ -14,7 +14,7 @@ const logSchema = z.object({
 
 type LogInputFormProps = {
   key_id: "start_time" | "end_time" | "break_start" | "break_end";
-  value: number | null;
+  value?: number;
   date_id: string;
   log_id?: string;
   user_id?: string;
@@ -45,7 +45,7 @@ const LogInputForm = ({
     ...form
   } = useForm<z.infer<typeof logSchema>>({
     defaultValues: {
-      log_time: minutesToTimeString(value || 0),
+      log_time: minutesToTimeString(value),
     },
     resolver: zodResolver(logSchema),
     mode: "onChange",
@@ -55,15 +55,17 @@ const LogInputForm = ({
     const timestamp = timeStringToMinutes(log_time);
 
     if (key_id === "start_time" && timestamp > log?.end_time) {
-      toast({
-        description: "A hora de entrada deve ser maior que a hora de saida.",
-        title: "Erro",
-        variant: "destructive",
-      });
-      form.setError("log_time", {
-        message: "A hora de entrada deve ser maior que a hora de saida.",
-      });
-      return;
+      if (log?.end_time !== 0) {
+        toast({
+          description: "A hora de entrada deve ser maior que a hora de saida.",
+          title: "Erro",
+          variant: "destructive",
+        });
+        form.setError("log_time", {
+          message: "A hora de entrada deve ser maior que a hora de saida.",
+        });
+        return;
+      }
     }
 
     if (key_id === "end_time" && timestamp < log?.start_time) {

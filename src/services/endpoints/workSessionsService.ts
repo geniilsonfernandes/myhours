@@ -36,8 +36,11 @@ export const getWorkSessions = async (
   to: string,
 ): Promise<WorkSession | undefined> => {
   try {
+
+    const user = await JSON.parse(localStorage.getItem("user") || "{}");
+
     const { data } = await axiosInstance.get<SessionsResponse>("/worklog", {
-      params: { from, to },
+      params: { from, to, user_id: user.id },
     });
 
     const dates: Record<string, Sessions> = {};

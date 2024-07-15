@@ -3,6 +3,7 @@
 import { encrypt } from "@/lib";
 import { prisma } from "@/lib/services/prisma";
 import { LoginError } from "@/shared/erros";
+import bcrypt from "bcrypt";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -23,7 +24,9 @@ export async function loginAction({ email, password }: LoginInput) {
       throw new LoginError("Email ou senha inválidos");
     }
 
-    if (finduser.password !== password) {
+    const comparePassword = await bcrypt.compare(password, finduser.password);
+
+    if (!comparePassword) {
       throw new LoginError("Email ou senha inválidos");
     }
 
@@ -47,10 +50,11 @@ export async function loginAction({ email, password }: LoginInput) {
         name: finduser.name,
         email: finduser.email,
         role: finduser.role,
+        daily_work_hours: finduser.daily_work_hours,
+        daily_work_minutes: finduser.daily_work_minutes,
       },
     };
   } catch (error) {
-    console.error(error);
     throw new LoginError("Email ou senha inválidos");
   }
   redirect("/");

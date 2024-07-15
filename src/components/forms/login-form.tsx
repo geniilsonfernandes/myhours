@@ -51,6 +51,8 @@ function LoginForm() {
         id: session.user.id,
         name: session.user.name,
         role: session.user.role,
+        daily_work_hours: session.user.daily_work_hours,
+        daily_work_minutes: session.user.daily_work_minutes,
       });
       router.push("/dashboard");
       toast({

@@ -4,11 +4,16 @@ import { cn } from "@/lib/utils";
 import { WorkSession } from "@/services/endpoints/workSessionsService";
 import authStore from "@/services/store/auth";
 import { WorkLog } from "@/types/models";
-import { calculateExtraTime, calculateTotalWorking } from "@/utils";
+import {
+  calculateExtraTime,
+  calculateTotalWorking,
+  minutesToTimeString,
+} from "@/utils";
 import { formatDate } from "@/utils/dates";
 import { Hourglass, Timer } from "lucide-react";
 import LogInputForm from "./log-input-form";
 import TimerView from "./timer-view";
+import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
 
 type TimerRowProps = {
@@ -39,11 +44,24 @@ const TimerRow = ({
         disabled && "pointer-events-none opacity-50",
       )}
     >
-      <div className="" aria-label="log header">
+      <div
+        className="flex w-full items-center justify-between"
+        aria-label="log header"
+      >
         <TimerView
           label={formatDate(day, "ddd")}
           value={day ? formatDate(day, "DD MMMM") : ""}
         />
+        <Badge
+          className="inline-flex items-center gap-2 text-cyan-500"
+          variant={"secondary"}
+        >
+          <Timer size={16} />
+          {minutesToTimeString(
+            user?.daily_work_hours! + user?.daily_work_minutes!,
+          )}{" "}
+          Horas por dia{" "}
+        </Badge>
       </div>
 
       {isLoading && (
@@ -62,7 +80,7 @@ const TimerRow = ({
           <div className="flex flex-col gap-4 sm:flex-row">
             <LogInputForm
               key_id="start_time"
-              value={log?.start_time === 0 ? 0 : log?.start_time || null}
+              value={log?.start_time}
               date_id={day}
               user_id={user?.id}
               log_id={log?.id}
@@ -77,7 +95,7 @@ const TimerRow = ({
             />
             <LogInputForm
               key_id="break_start"
-              value={log?.break_start === 0 ? 0 : log?.break_start || null}
+              value={log?.break_start}
               date_id={day}
               user_id={user?.id}
               log_id={log?.id}
@@ -92,7 +110,7 @@ const TimerRow = ({
             />
             <LogInputForm
               key_id="break_end"
-              value={log?.break_end === 0 ? 0 : log?.break_end || null}
+              value={log?.break_end}
               date_id={day}
               user_id={user?.id}
               log_id={log?.id}
@@ -108,7 +126,7 @@ const TimerRow = ({
           </div>
           <LogInputForm
             key_id="end_time"
-            value={log?.end_time === 0 ? 0 : log?.end_time || null}
+            value={log?.end_time}
             date_id={day}
             user_id={user?.id}
             log_id={log?.id}
@@ -137,7 +155,7 @@ const TimerRow = ({
               />
             </div>
             <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100/50 text-blue-500">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-100/50 text-cyan-500">
                 <Timer strokeWidth={1} />
               </span>
               <TimerView

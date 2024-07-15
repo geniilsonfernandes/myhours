@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/services/prisma";
+import bcrypt from "bcrypt";
 
 type CreateEmployeeInput = {
   email: string;
@@ -14,11 +15,13 @@ type CreateEmployeeInput = {
 
 export async function createEmployee(data: CreateEmployeeInput) {
   try {
+    const password = await bcrypt.hash(data.password, 10);
+
     await prisma.employee.create({
       data: {
         email: data.email,
         name: data.name,
-        password: data.password,
+        password: password,
         role: data.role,
         phone: data.phone,
         daily_work_hours: data.daily_work_hours,
