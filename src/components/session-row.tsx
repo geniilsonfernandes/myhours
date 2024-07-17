@@ -16,7 +16,7 @@ import TimerView from "./timer-view";
 import { Badge } from "./ui/badge";
 import { Skeleton } from "./ui/skeleton";
 
-type TimerRowProps = {
+type SessionRowProps = {
   day: string;
   log?: WorkLog;
   disabled?: boolean;
@@ -26,13 +26,13 @@ type TimerRowProps = {
   sessions?: WorkSession;
 };
 
-const TimerRow = ({
+const SessionRow = ({
   day,
   disabled,
   isLoading,
   sessions,
   fetching,
-}: TimerRowProps) => {
+}: SessionRowProps) => {
   const { user } = authStore((state) => state);
   const date_id = formatDate(day, "YYYY-MM-DD");
   const log = sessions?.logs[date_id] || null;
@@ -175,4 +175,4 @@ const TimerRow = ({
   );
 };
 
-export default TimerRow;
+export default SessionRow;

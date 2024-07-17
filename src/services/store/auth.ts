@@ -2,6 +2,7 @@
 
 import { IUser } from "@/types/user";
 import { create } from "zustand";
+import localStorageUtil from "./localStorageUtil";
 type State = {
   user: IUser | null;
 };
@@ -24,9 +25,11 @@ const authStore = create<State & Action>((set) => ({
 }));
 
 if (typeof window !== "undefined") {
-  authStore.setState({
-    user: JSON.parse(localStorage.getItem("user") || "{}"),
-  });
+  const user = localStorageUtil.getUser();
+
+  if (user) {
+    authStore.setState({ user });
+  }
 }
 
 export default authStore;

@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getWorkSessions } from "../endpoints/workSessionsService";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { getWorkSessions, WorkSession } from "../endpoints/workSessionsService";
 import queryClient from "../http";
 
 type workSessions = {
@@ -7,7 +7,9 @@ type workSessions = {
   to: string;
 };
 
-const useWorkSessions = (selectedWeek: workSessions) => {
+const useWorkSessions = (
+  selectedWeek: workSessions,
+): UseQueryResult<WorkSession | undefined> => {
   return useQuery({
     queryKey: ["worklog", selectedWeek.from],
     queryFn: () => getWorkSessions(selectedWeek.from, selectedWeek.to),
