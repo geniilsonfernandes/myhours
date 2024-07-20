@@ -5,6 +5,7 @@ import queryClient from "../http";
 type workSessions = {
   from: string;
   to: string;
+  user_id?: string;
 };
 
 const useWorkSessions = (
@@ -12,7 +13,8 @@ const useWorkSessions = (
 ): UseQueryResult<WorkSession | undefined> => {
   return useQuery({
     queryKey: ["worklog", selectedWeek.from],
-    queryFn: () => getWorkSessions(selectedWeek.from, selectedWeek.to),
+    queryFn: () =>
+      getWorkSessions(selectedWeek.from, selectedWeek.to, selectedWeek.user_id),
   });
 };
 

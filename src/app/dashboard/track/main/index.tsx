@@ -6,6 +6,7 @@ import WeekPick, { WeekPickRange } from "@/components/week-pick";
 import useWorkSessions from "@/services/query/useWorkSessions";
 
 import { endOfWeek, format, startOfWeek } from "date-fns";
+import { CalendarCheck, CalendarRange } from "lucide-react";
 import { useState } from "react";
 import SessionDay from "./session-day";
 import WeekDays from "./week-days";
@@ -34,14 +35,14 @@ const Main = () => {
                 onClick={() => setTab("day")}
                 className="text-zinc-600 dark:text-zinc-200"
               >
-                Hoje
+                <CalendarCheck size={18} className="mr-2" /> Hoje
               </TabsTrigger>
               <TabsTrigger
                 value="week"
                 onClick={() => setTab("week")}
                 className="text-zinc-600 dark:text-zinc-200"
               >
-                Semana
+                <CalendarRange size={18} className="mr-2" /> Semana
               </TabsTrigger>
             </TabsList>
           </Tabs>

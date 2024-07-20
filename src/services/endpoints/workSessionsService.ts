@@ -34,12 +34,11 @@ function tranformResponse(response: SessionsResponse) {
 export const getWorkSessions = async (
   from: string,
   to: string,
+  user_id?: string,
 ): Promise<WorkSession | undefined> => {
   try {
-    const user = await JSON.parse(localStorage.getItem("user") || "{}");
-
     const { data } = await axiosInstance.get<SessionsResponse>(ENDPOINT, {
-      params: { from, to, user_id: user.id },
+      params: { from, to, user_id },
     });
 
     return tranformResponse(data);

@@ -21,11 +21,7 @@ const List = ({ data }: ListProps) => {
           header: "ID",
           cell: ({ getValue }) => {
             const id = getValue() as string;
-            return (
-              <div className="rounded-md border border-slate-200 bg-slate-100 p-2 text-sm">
-                {id}
-              </div>
-            );
+            return <>{id.substring(0, 6)}</>;
           },
         },
         {

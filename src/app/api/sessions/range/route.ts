@@ -10,6 +10,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const from = searchParams.get("from");
   const to = searchParams.get("to");
+  const user_id = searchParams.get("user_id");
 
   const cookieStore = cookies();
   const session = cookieStore.get("session")?.value;
@@ -35,7 +36,7 @@ export async function GET(request: Request) {
 
   const response = await prisma.worklog.findMany({
     where: {
-      employee_id: parsed.user.id,
+      employee_id: user_id ? user_id : parsed.user.id,
       date: {
         gte: range.from,
         lte: range.to,

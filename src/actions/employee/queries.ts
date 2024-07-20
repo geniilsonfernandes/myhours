@@ -7,3 +7,13 @@ export async function getEmployees() {
 
   return data;
 }
+
+export async function getEmployee(id: string) {
+  const data = await prisma.employee.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  return data;
+}

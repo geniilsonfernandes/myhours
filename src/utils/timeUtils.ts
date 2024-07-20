@@ -1,3 +1,5 @@
+import localStorageUtil from "@/services/store/localStorageUtil";
+
 export const timeStringToMinutes = (time: string) => {
   const onlyNumbers = time.replace(/[^0-9]/g, "");
   const match = onlyNumbers.match(/^(\d{1,2})(\d{0,9999})$/);
@@ -32,6 +34,7 @@ type log = {
   break_start: number;
   end_time: number;
   start_time: number;
+  expectedTimeWork?: number;
 };
 
 export const calculateExtraTime = ({
@@ -39,8 +42,13 @@ export const calculateExtraTime = ({
   break_start,
   end_time,
   start_time,
+  expectedTimeWork,
 }: log) => {
-  const expectedTime = 480;
+  const user = localStorageUtil.getUser();
+
+  const expectedTime =
+    expectedTimeWork ||
+    (user?.daily_work_hours || 0) * 60 + (user?.daily_work_minutes || 0);
 
   let break_time;
   if (break_start > 0 && break_end > 0) {
@@ -51,12 +59,8 @@ export const calculateExtraTime = ({
 
   const total = end_time - start_time - break_time;
 
-  if (expectedTime >= total) {
-    return "00:00";
-  }
-
-  if (end_time < start_time) {
-    return "00:00";
+  if (total < expectedTime) {
+    return `-${minutesToTimeString(expectedTime - total)}`;
   }
 
   return minutesToTimeString(total - expectedTime);

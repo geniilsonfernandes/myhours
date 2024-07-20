@@ -14,7 +14,9 @@ export default async function Home() {
         <Link href="/dashboard/track">
           <Card>
             <CardHeader>
-              <Timer strokeWidth={1} className="mb-4" />
+              <span className="mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Timer size={18} />
+              </span>
               <CardTitle className="cursor-pointer text-sm hover:underline">
                 Minha folha de ponto
               </CardTitle>
@@ -28,7 +30,9 @@ export default async function Home() {
         <Link href="/dashboard/employee">
           <Card>
             <CardHeader>
-              <UsersRound strokeWidth={1} className="mb-4" />
+              <span className="mb-8 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <UsersRound size={18} />
+              </span>
               <CardTitle className="cursor-pointer text-sm hover:underline">
                 Funcionários
               </CardTitle>

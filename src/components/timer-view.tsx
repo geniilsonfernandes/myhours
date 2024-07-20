@@ -8,6 +8,7 @@ type TimerViewProps = {
   prefix?: string;
   suffix?: string;
   isLoading?: boolean;
+  fallbackValue?: string;
 };
 
 const TimerView = ({
@@ -17,6 +18,7 @@ const TimerView = ({
   prefix,
   suffix,
   isLoading = false,
+  fallbackValue = "00:00",
 }: TimerViewProps) => {
   return (
     <div className="flex flex-col">
@@ -30,7 +32,8 @@ const TimerView = ({
         )}
       >
         {prefix && <span>{prefix} </span>}
-        {value}
+        {isLoading && <span>{fallbackValue}</span>}
+        {!isLoading && value}
         {suffix && <span> {suffix}</span>}
       </div>
     </div>

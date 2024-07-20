@@ -11,14 +11,14 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useToast } from "@/components/ui/use-toast";
-import useClock from "@/hooks/useClock";
 import { cn } from "@/lib/utils";
 import { updateSession } from "@/services/query/useWorkSession";
 import { isPMorAM, minutesToTimeString, timeStringToMinutes } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Clock, LoaderCircle } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { LoaderCircle, X } from "lucide-react";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import TimerInput from "./ui/timer-input";
 
 const logSchema = z.object({
   log_time: z.string(),
@@ -52,7 +52,7 @@ const SessionButton = ({
   log_id,
 }: SessionButtonProps) => {
   const { toast } = useToast();
-  const { formattedTime } = useClock();
+
   const colors = {
     bg: {
       green: "bg-green-100",
@@ -115,33 +115,26 @@ const SessionButton = ({
       <DrawerTrigger asChild>
         <button
           className={cn(
-            "flex flex-col justify-between gap-12 rounded-lg p-4",
-            colors.bg[color],
+            "flex flex-col justify-between gap-12 rounded-lg border border-slate-200 p-4 text-slate-500 hover:bg-slate-50",
             disabled && "pointer-events-none cursor-not-allowed opacity-50",
           )}
         >
-          <div className="text-left">
-            <h3 className="text-sm font-medium text-slate-800">
-              {labels[key_id]}
-            </h3>
-            {showClock && (
-              <div className="mt-1 flex items-center gap-1">
-                <Clock className="text-slate-500" size={16} />
-                <p className="text-sm text-slate-500">{formattedTime}</p>
-              </div>
-            )}
+          <div className="flex items-center gap-4 text-left">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+              {icon}
+            </span>
+            <h3 className="text-sm font-medium">{labels[key_id]}</h3>
           </div>
           <div className="flex items-center gap-4">
-            {icon}{" "}
             <span className="text-sm font-medium">
               {isLoading ? (
                 <span>
                   <LoaderCircle className="animate-spin" size={16} />
                 </span>
               ) : (
-                <>
-                  {time} {isPMorAM(time)}
-                </>
+                <span className="capitalize text-slate-500">
+                  {time ? `${time} ${isPMorAM(time)}` : "clique para definir"}
+                </span>
               )}{" "}
             </span>
           </div>
@@ -153,18 +146,32 @@ const SessionButton = ({
           <DrawerDescription>
             Você pode alterar o horário a qualquer momento
           </DrawerDescription>
-          <div className="my-8 mt-10 flex items-center justify-center gap-4 text-left">
-            <input
-              placeholder="00:00"
-              defaultValue={value ? minutesToTimeString(value) : "00:00"}
-              type="time"
-              className="bg-transparent text-center text-3xl"
-              {...form.register("log_time")}
-            />
 
-            {isPMorAM("00:00" || "00:00")}
-          </div>
+          <DrawerClose asChild className="absolute right-4 top-4">
+            <Button variant="outline">
+              <X size={16} />
+            </Button>
+          </DrawerClose>
         </DrawerHeader>
+
+        <div className="my-8 mt-10 flex items-center justify-center gap-4 text-left">
+          <Controller
+            control={form.control}
+            name="log_time"
+            render={({ field }) => (
+              <TimerInput
+                value={{
+                  hours: time.substring(0, 2),
+                  minutes: time.substring(3, 5),
+                }}
+                onChange={({ hours, minutes }) => {
+                  field.onChange(`${hours}:${minutes}`);
+                }}
+              />
+            )}
+          />
+        </div>
+
         <DrawerFooter>
           <Button onClick={form.handleSubmit(onSubmit)} disabled={isSubmitting}>
             {isSubmitting ? (

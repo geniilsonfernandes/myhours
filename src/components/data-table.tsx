@@ -50,6 +50,7 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      pagination: { pageIndex: 0, pageSize: 100 },
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -65,16 +66,12 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4 text-slate-500">
-      {/* <DataTableToolbar table={table} /> */}
-      <div className="rounded-md border">
+    <div className="space-y-4">
+      <div className="rounded-3xl bg-white p-4 shadow-lg shadow-slate-100">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className="bg-slate-50 dark:bg-slate-800"
-              >
+              <TableRow key={headerGroup.id} className="">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead
@@ -100,6 +97,7 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className="hover:bg-slate-100"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

@@ -3,8 +3,9 @@
 import { Calendar } from "@/components/ui/calendar";
 import { formatMonth } from "@/utils/date-fns";
 import { addDays, endOfWeek, startOfWeek } from "date-fns";
-import { ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useState } from "react";
+import MonthControl from "./month-control";
 import { Button } from "./ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
@@ -31,9 +32,7 @@ const WeekPick = ({
   });
   const [selectDay, setSelectDay] = useState<Date>(new Date());
 
-  const handleWeekChange = (type: "previous" | "next", e: React.MouseEvent) => {
-    e.stopPropagation();
-
+  const handleWeekChange = (type: "previous" | "next") => {
     const days =
       mode === "range"
         ? type === "previous"
@@ -65,33 +64,23 @@ const WeekPick = ({
     setSelectDay(new Date());
   };
 
+  const dateformated =
+    mode === "range"
+      ? `
+        ${formatMonth(startOfWeek(selectedWeek?.from))} -
+        ${formatMonth(endOfWeek(selectedWeek?.to))}
+      `
+      : formatMonth(selectDay);
+
   return (
     <div className="flex w-full items-center gap-4">
       <Popover>
-        <PopoverTrigger className="w-full">
-          <div className="inline-flex w-full cursor-pointer items-center justify-between gap-4 rounded-md border border-input text-sm text-slate-500 sm:w-[250px]">
-            <div
-              onClick={handleWeekChange.bind(null, "previous")}
-              className="flex h-10 w-10 items-center justify-center rounded-md hover:bg-slate-100"
-            >
-              <ChevronLeft />
-            </div>
-            <span>
-              {mode === "range" ? (
-                <>
-                  {formatMonth(startOfWeek(selectedWeek?.from))} -{" "}
-                  {formatMonth(endOfWeek(selectedWeek?.to))}
-                </>
-              ) : (
-                formatMonth(selectDay)
-              )}
-            </span>
-            <div
-              onClick={handleWeekChange.bind(null, "next")}
-              className="flex h-10 w-10 items-center justify-center rounded-md hover:bg-slate-100"
-            >
-              <ChevronRight />
-            </div>
+        <PopoverTrigger asChild>
+          <div className="w-[350px]">
+            <MonthControl
+              dateformated={dateformated}
+              handleWeekChange={handleWeekChange}
+            />
           </div>
         </PopoverTrigger>
         <PopoverContent>
@@ -121,7 +110,10 @@ const WeekPick = ({
           />
         </PopoverContent>
       </Popover>
-      <Button onClick={handleSetThisWeek} variant="outline">
+      <Button
+        onClick={handleSetThisWeek}
+        className="h-14 w-14 bg-white hover:bg-slate-100"
+      >
         <RotateCcw size={16} className="text-slate-500" />
       </Button>
     </div>
